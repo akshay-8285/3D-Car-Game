@@ -1,0 +1,61 @@
+newmtl Cuz
+Ka 0.5 0.5 0.5
+Kd 0.5 0.5 0.5
+Ks 1 1 1
+Ns 50
+illum 2
+map_Kd texture\lamborghinir6_125_diffuse.dds
+map_Ks texture\lamborghinir6_125_diffuse_a.dds
+bump texture\lamborghiniR6_125_normal.dds
+
+newmtl Lob
+Ka 0.2 0.2 0.2
+Kd 0.2 0.2 0.2
+Ks 1 1 1
+Ns 550
+illum 2
+map_Kd texture\rgba19191966.dds
+
+newmtl Shin
+Ka 0.4 0.4 0.4
+Kd 0.4 0.4 0.4
+Ks 0.3 0.3 0.3
+Ns 50
+illum 2
+map_Kd texture\lamborghinir6_125wheels_diffuse.dds
+bump texture\lamborghiniR6_125Wheels_normal.dds
+
+newmtl Salon
+Ka 0.5 0.5 0.5
+Kd 0.5 0.5 0.5
+Ks 0.2 0.2 0.2
+Ns 50
+illum 2
+map_Kd texture\lamborghinir6_125interior_diffuse.dds
+map_Ks texture\lamborghinir6_125interior_diffuse_a.dds
+bump texture\lamborghiniR6_125Interior_normal.dds
+
+newmtl Nacl
+Ka 0.6 0.6 0.6
+Kd 0.6 0.6 0.6
+Ks 0.2 0.2 0.2
+Ns 30
+illum 2
+map_Kd texture\lamborghinir6_125decals_diffuse.dds
+
+newmtl MIRROR
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.2 0.2 0.2
+Ns 30
+illum 2
+map_Kd texture\mirror.dds
+
+newmtl in_win
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.2 0.2 0.2
+Ns 10
+illum 2
+map_Kd texture\rgba19191966.dds
+

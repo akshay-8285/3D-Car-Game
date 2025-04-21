@@ -15,6 +15,7 @@ public class CarController : MonoBehaviour
     {
         public GameObject wheelModel;
         public WheelCollider wheelCollider;
+        public GameObject tireEffect;
         public Axel axel;
     }
 
@@ -28,11 +29,18 @@ public class CarController : MonoBehaviour
 
     private Rigidbody carRb;
     private Vector3 centerOfMass;
+    private float totalRotation;
+    private float lastYRotation;
+    private bool isDoing360 = false;
+
+    [SerializeField] private GameObject leftBreakLight , rightBreakLight;
 
     void Start()
     {
         carRb = GetComponent<Rigidbody>();
         carRb.centerOfMass = centerOfMass;
+        leftBreakLight.SetActive(false);
+        rightBreakLight.SetActive(false);
     }
 
     void Update()
@@ -46,6 +54,8 @@ public class CarController : MonoBehaviour
         Move();
         Steer();
         Brake();
+        EffectWheel();
+        Rotate360();
        
     }
 
@@ -82,6 +92,8 @@ public class CarController : MonoBehaviour
             foreach (var wheel in wheels)
             {
                 wheel.wheelCollider.brakeTorque = breakAcceleration   * 300 * Time.deltaTime;
+                leftBreakLight.SetActive(true);
+                rightBreakLight.SetActive(true);
             }
         }
         else
@@ -89,6 +101,8 @@ public class CarController : MonoBehaviour
             foreach (var wheel in wheels)
             {
                 wheel.wheelCollider.brakeTorque = 0;
+                leftBreakLight.SetActive(false);
+                rightBreakLight.SetActive(false);
             }
         }
     }
@@ -100,6 +114,46 @@ public class CarController : MonoBehaviour
             wheel.wheelCollider.GetWorldPose(out Vector3 position, out Quaternion rotation);
             wheel.wheelModel.transform.position = position;
             wheel.wheelModel.transform.rotation = rotation;
+        }
+    }
+
+    public void Rotate360()
+    {
+        
+        float currentYRotation = transform.eulerAngles.y;
+        float deltaRotation = Mathf.DeltaAngle(lastYRotation, currentYRotation);
+        totalRotation += Mathf.Abs(deltaRotation);
+
+        if(!Input.GetKey(KeyCode.Space) || carRb.linearVelocity.magnitude < 2f)
+        {
+            isDoing360 = false;
+            totalRotation = 0f;
+        }
+        if (totalRotation >= 360f && !isDoing360)
+        {
+            isDoing360 = true;
+            Debug.Log("360 Done!");
+            CarAudio.Instance.BrakeSound();
+        }
+
+
+        lastYRotation = currentYRotation;
+
+        Debug.Log("Total Rotation : " + totalRotation);
+    }
+
+    public void EffectWheel()
+    {
+        foreach (var wheel in wheels)
+        {
+            if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear)
+            {
+                wheel.tireEffect.GetComponentInChildren<TrailRenderer>().emitting = true;
+            }
+            else
+            {
+                wheel.tireEffect.GetComponentInChildren<TrailRenderer>().emitting = false;
+            }
         }
     }
 }
