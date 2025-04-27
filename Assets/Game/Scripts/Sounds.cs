@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class Sounds : MonoBehaviour
 {
     public Button changeButton;
+
     [System.Serializable]
     public struct Sound
     {
@@ -16,39 +16,46 @@ public class Sounds : MonoBehaviour
     }
 
     public Sound[] sounds;
+    private AudioSource audioSource;
 
     void Awake()
     {
-         InitializeSounds();
+        audioSource = gameObject.GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+            
+
     }
-    public void Start()
+
+    void Start()
     {
-       
         changeButton.onClick.AddListener(ChangeMusic);
 
-    }
-
-
-    public void InitializeSounds()
-    {
-        foreach (Sound sound_ in sounds)
+        if(sounds.Length > 0)
         {
-            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-            audioSource.clip = sound_.clip;
-            audioSource.loop = sound_.loop;
-            audioSource.volume = sound_.volume;
-            audioSource.pitch = sound_.pitch;
-            // audioSource.PlayOneShot(sound_.clip, sound_.volume);
+            PlaySound(sounds[0]);
         }
     }
+
+   
+
     public void ChangeMusic()
     {
-        if (sounds.Length > 0)
+        if(sounds.Length > 0)
         {
-            AudioSource audioSource = gameObject.GetComponent<AudioSource>();
-            audioSource.clip = sounds[Random.Range(0, sounds.Length)].clip;
-            audioSource.PlayOneShot(audioSource.clip, 1f);
+            int randomIndex = Random.Range(0, sounds.Length);
+            PlaySound(sounds[randomIndex]);
         }
     }
-    
+    public void PlaySound(Sound sound)
+    {
+        audioSource.Stop();
+        audioSource.clip = sound.clip;
+        audioSource.loop = sound.loop;
+        audioSource.volume = sound.volume;
+        audioSource.pitch = sound.pitch;
+        audioSource.Play();
+    }
 }
