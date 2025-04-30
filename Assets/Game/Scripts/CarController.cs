@@ -16,6 +16,7 @@ public class CarController : MonoBehaviour
         public GameObject wheelModel;
         public WheelCollider wheelCollider;
         public GameObject tireEffect;
+        public ParticleSystem smokeEffect;
         public Axel axel;
     }
 
@@ -149,6 +150,7 @@ public class CarController : MonoBehaviour
             if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear)
             {
                 wheel.tireEffect.GetComponentInChildren<TrailRenderer>().emitting = true;
+                wheel.smokeEffect.Emit(1);
             }
             else
             {
