@@ -30,4 +30,11 @@ public class CameraFollowScript : MonoBehaviour
         rotation = Quaternion.LookRotation(direction, Vector3.up);
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
     }
+
+    public void SetCamera(Transform newCar)
+    {
+        car = newCar;
+        transform.position = car.TransformPoint(moveOffset);
+        transform.LookAt(car);
+    }
 }

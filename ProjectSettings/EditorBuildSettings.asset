@@ -6,7 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/SplashScreen.unity
+    guid: ca0e2033253221943bc97269f3c25584
+  - enabled: 1
+    path: Assets/Scenes/CarSelection.unity
+    guid: f45556ce919e61c45ae84182106a926d
+  - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: 8d68a8c139112ee4387ec230ac89a4a2
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -1,67 +1,55 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CarAudio : MonoBehaviour
 {
     public static CarAudio Instance;
-    public float minSpeed;
-    public float maxSpeed;
-    public float minPitch;
-    public float maxPitch;
-    private float pitchFromCar;
+    
+    [Header("Engine Sound")]
+    public float minSpeed = 5f;
+    public float maxSpeed = 100f;
+    public float minPitch = 0.7f;
+    public float maxPitch = 2.5f;
     public AudioSource engineAudioSource;
+    
+    [Header("Brake Sound")]
     public AudioClip brakeClip;
-    // public AudioClip driveClip;
+    [Range(0,1)] public float brakeVolume = 0.5f;
+    public float brakeSoundThreshold = 5f; // Minimum speed to play brake sound
+
     private Rigidbody carRigidbody;
-    private float currentSpeed;
 
     private void Awake()
     {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-       
+        if(Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
-    public void Start()
+    void Start()
     {
-        engineAudioSource = GetComponent<AudioSource>();
         carRigidbody = GetComponent<Rigidbody>();
-    }
-    public void Update()
-    {
-        EngineSound();
-    }
-    
-    public void EngineSound()
-    {
-        currentSpeed = carRigidbody.linearVelocity.magnitude;
-        pitchFromCar = carRigidbody.linearVelocity.magnitude / 50f;
-
-        if(currentSpeed < minSpeed)
-        {
-            engineAudioSource.pitch = minPitch;
-        }
-        if (currentSpeed > maxSpeed && currentSpeed < maxSpeed)
-        {
-            engineAudioSource.pitch = minPitch + pitchFromCar;
-        }
-        if (currentSpeed > maxSpeed)
-        {
-            engineAudioSource.pitch = maxPitch;
-        }
-
-       
+        if(!engineAudioSource) engineAudioSource = GetComponent<AudioSource>();
     }
 
-    public void BrakeSound()
+    void Update()
     {
-        if (engineAudioSource != null)
+        if(carRigidbody != null)
+            UpdateEngineSound();
+    }
+
+    void UpdateEngineSound()
+    {
+        float currentSpeed = carRigidbody.linearVelocity.magnitude;
+        float speedRatio = Mathf.Clamp01(currentSpeed / maxSpeed);
+        
+        engineAudioSource.pitch = Mathf.Lerp(minPitch, maxPitch, speedRatio);
+        engineAudioSource.volume = 0.5f + speedRatio * 0.5f; // Volume increases with speed
+    }
+
+    public void PlayBrakeSound()
+    {
+        if(brakeClip != null && carRigidbody.linearVelocity.magnitude > brakeSoundThreshold)
         {
-            engineAudioSource.PlayOneShot(brakeClip);
+            AudioSource.PlayClipAtPoint(brakeClip, transform.position, brakeVolume);
         }
     }
-   
 }

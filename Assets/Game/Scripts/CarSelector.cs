@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 public class CarSelector : MonoBehaviour
 {
     [SerializeField] private GameObject[] cars;
-    [SerializeField] private Button previousButton , nextButton , PlayButton;
+    [SerializeField] private Button previousButton , nextButton , PlayButton , quitButton;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
     private int currentIndex;
 
     private void Awake()
@@ -25,6 +27,7 @@ public class CarSelector : MonoBehaviour
         nextButton.onClick.AddListener(NextCar);
         previousButton.onClick.AddListener(previousCar);
         PlayButton.onClick.AddListener(PlayGame);
+        quitButton.onClick.AddListener(OnApplicationQuit);
         
     }
 
@@ -58,6 +61,7 @@ public class CarSelector : MonoBehaviour
             cars[currentIndex].SetActive(true);
 
         }
+        audioSource.PlayOneShot(buttonClickSound);
         PlayerPrefs.SetInt("carIndex", currentIndex);
         PlayerPrefs.Save();
     }
@@ -71,13 +75,20 @@ public class CarSelector : MonoBehaviour
             cars[currentIndex].SetActive(true);
 
         }
+        audioSource.PlayOneShot(buttonClickSound);
         PlayerPrefs.SetInt("carIndex", currentIndex);
         PlayerPrefs.Save();
     }
 
     public void PlayGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("GameScene");
+        audioSource.PlayOneShot(buttonClickSound);
+    }
+    public void OnApplicationQuit()
+    {
+        Application.Quit();
+        audioSource.PlayOneShot(buttonClickSound);
     }
 
 

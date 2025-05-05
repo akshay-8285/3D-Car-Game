@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System;
+using UnityEngine.EventSystems;
 
 public class CarController : MonoBehaviour
 {
@@ -33,11 +35,17 @@ public class CarController : MonoBehaviour
     private float totalRotation;
     private float lastYRotation;
     private bool isDoing360 = false;
+    private bool isAccelerating = false;
+    private bool isBraking = false;
+    private bool isTurningLeft = false;
+    private bool isTurningRight = false;
 
     [SerializeField] private GameObject leftBreakLight , rightBreakLight;
 
     void Start()
     {
+
+        ControllEvent();
         carRb = GetComponent<Rigidbody>();
         carRb.centerOfMass = centerOfMass;
         leftBreakLight.SetActive(false);
@@ -64,14 +72,44 @@ public class CarController : MonoBehaviour
     {
         moveInput = Input.GetAxis("Vertical");
         turnInput = Input.GetAxis("Horizontal");
+        Debug.Log("Move Input : " + moveInput);
+        if (isAccelerating)
+        {
+            moveInput = 1f;
+        }
+        if (isBraking)
+        {
+            moveInput = -1f;
+        }
+        if (isTurningLeft)
+        {
+            turnInput = -1f;
+        }
+        if (isTurningRight)
+        {
+            turnInput = 1f;
+        }
     }
 
     public void Move()
     {
+            
         foreach (var wheel in wheels)
         {
             wheel.wheelCollider.motorTorque = moveInput  * 600 * maxAcceleration * Time.deltaTime;
+            
+            if(!isBraking)
+            {
+                wheel.wheelCollider.brakeTorque = 0;
+            }
+            // else
+            // {
+            //     wheel.wheelCollider.brakeTorque = breakAcceleration * 300 * Time.deltaTime;
+            // }
         }
+
+        
+        
     }
 
     public void Steer()
@@ -95,18 +133,21 @@ public class CarController : MonoBehaviour
                 wheel.wheelCollider.brakeTorque = breakAcceleration   * 300 * Time.deltaTime;
                 leftBreakLight.SetActive(true);
                 rightBreakLight.SetActive(true);
+                CarAudio.Instance.PlayBrakeSound();
             }
+        }
+
+        else if (isBraking)
+        {
+            leftBreakLight.SetActive(true);
+            rightBreakLight.SetActive(true);
         }
         else
         {
-            foreach (var wheel in wheels)
-            {
-                wheel.wheelCollider.brakeTorque = 0;
-                leftBreakLight.SetActive(false);
-                rightBreakLight.SetActive(false);
-            }
+            leftBreakLight.SetActive(false);
+            rightBreakLight.SetActive(false);
         }
-    }
+    }    
 
     public void AnimateWheels()
     {
@@ -134,7 +175,7 @@ public class CarController : MonoBehaviour
         {
             isDoing360 = true;
             Debug.Log("360 Done!");
-            CarAudio.Instance.BrakeSound();
+           
         }
 
 
@@ -147,7 +188,7 @@ public class CarController : MonoBehaviour
     {
         foreach (var wheel in wheels)
         {
-            if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear)
+            if (Input.GetKey(KeyCode.Space) && wheel.axel == Axel.Rear || isBraking && wheel.axel == Axel.Rear)
             {
                 wheel.tireEffect.GetComponentInChildren<TrailRenderer>().emitting = true;
                 wheel.smokeEffect.Emit(1);
@@ -157,5 +198,51 @@ public class CarController : MonoBehaviour
                 wheel.tireEffect.GetComponentInChildren<TrailRenderer>().emitting = false;
             }
         }
+    }
+
+    public void AccelerateButtonDown()
+    {
+        isAccelerating = true;
+    }
+    public void AccelerateButtonUp()
+    {
+        isAccelerating = false;
+    }
+    public void BrakeButtonDown()
+    {
+        isBraking = true;
+    }
+    public void BrakeButtonUp()
+    {
+        isBraking = false;
+
+    }
+    public void LeftButtonDown()
+    {
+        isTurningLeft = true;
+    }
+    public void LeftButtonUp()
+    {
+        isTurningLeft = false;
+    }
+    public void RightButtonDown()
+    {
+        isTurningRight = true;
+    }
+    public void RightButtonUp()
+    {
+        isTurningRight = false;
+    }
+
+    public void ControllEvent()
+    {
+        CarInputEvent.OnAccleratePressed += AccelerateButtonDown;
+        CarInputEvent.OnAcclerateReleased += AccelerateButtonUp;
+        CarInputEvent.OnBrakePressed += BrakeButtonDown;
+        CarInputEvent.OnBrakeReleased += BrakeButtonUp;
+        CarInputEvent.OnLeftPressed += LeftButtonDown;
+        CarInputEvent.OnLeftReleased += LeftButtonUp;
+        CarInputEvent.OnRightPressed += RightButtonDown;
+        CarInputEvent.OnRightReleased += RightButtonUp;
     }
 }
